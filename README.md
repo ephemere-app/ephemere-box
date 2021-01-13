@@ -4,6 +4,7 @@
 
 [![GitHub Tag](https://img.shields.io/github/tag/ephemere-app/ephemere-box.svg)](https://github.com/ephemere-app/ephemere-box/releases/latest)
 [![GitHub Action CI/CD](https://github.com/ephemere-app/ephemere-box/workflows/CI/CD/badge.svg)](https://github.com/ephemere-app/ephemere-box/actions?query=workflow%3A%22CI%2FCD%22)
+[![Coverage Status](https://img.shields.io/codecov/c/github/ephemere-app/ephemere-box)](https://codecov.io/gh/ephemere-app/ephemere-box)
 [![License](https://img.shields.io/github/license/ephemere-app/ephemere-box)](https://github.com/ephemere-app/ephemere-box/blob/master/LICENSE)
 
 Store and retrieve end-to-end encrypted and ephemeral messages from
