@@ -9,11 +9,56 @@
 Synchronize end-to-end encrypted and ephemeral messages from
 Ephemere using [Socket-io](https://socket.io).
 
-## Build Setup
+## Development
+
+Install dependencies:
+
+```bash
+pipenv install -d
+```
+
+Run QA suite:
+
+```bash
+inv qa
+```
+
+Run API server:
 
 ```
-pipenv install -d
-inv qa
+cp .example.env .env
+docker-compose up -d
+honcho start
+```
+
+### VSCode
+
+If using VSCode, use the following configuration in `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ephemere_box",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["--host=0.0.0.0", "--port=8000", "ephemere_box:app"],
+      "envFile": "",
+      "justMyCode": false
+    },
+    {
+      "name": "tests",
+      "type": "python",
+      "request": "test",
+      "justMyCode": false,
+      "env": {
+        "CI": "false"
+      }
+    }
+  ]
+}
 ```
 
 ## Docker

@@ -1,0 +1,1 @@
+web: gunicorn --name=ephemere-box --worker-class=uvicorn.workers.UvicornWorker --access-logfile=- --error-logfile=- ephemere_box:app
