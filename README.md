@@ -6,8 +6,8 @@
 [![GitHub Action CI/CD](https://github.com/ephemere-app/ephemere-box/workflows/CI/CD/badge.svg)](https://github.com/ephemere-app/ephemere-box/actions?query=workflow%3A%22CI%2FCD%22)
 [![License](https://img.shields.io/github/license/ephemere-app/ephemere-box)](https://github.com/ephemere-app/ephemere-box/blob/master/LICENSE)
 
-Synchronize end-to-end encrypted and ephemeral messages from
-Ephemere using [Socket-io](https://socket.io).
+Store and retrieve end-to-end encrypted and ephemeral messages from
+Ephemere using [Redis](https://redis.io).
 
 ## Development
 
