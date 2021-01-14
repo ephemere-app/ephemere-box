@@ -1,6 +1,8 @@
 import json
 import uuid
 
+from datetime import datetime, timedelta
+from enum import Enum
 from http import HTTPStatus
 from typing import Dict, Generator
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -44,9 +46,34 @@ def get_api_info(req: Request) -> Dict[str, str]:
 # ------------------------------------------------------------------------------
 
 
+class ExpiresInEnum(str, Enum):
+    one_minute = "1m"
+    five_minutes = "5m"
+    fifteen_minutes = "15m"
+    one_hour = "1h"
+    one_day = "1d"
+    two_days = "2d"
+    one_week = "1w"
+
+    def to_timedelta(self) -> timedelta:
+        mapping = {
+            self.one_minute: timedelta(minutes=1),
+            self.five_minutes: timedelta(minutes=5),
+            self.fifteen_minutes: timedelta(minutes=15),
+            self.one_hour: timedelta(hours=1),
+            self.one_day: timedelta(days=1),
+            self.two_days: timedelta(days=2),
+            self.one_week: timedelta(weeks=1),
+        }
+        return mapping[self.value]
+
+
 class BoxCreationSchema(BaseModel):
     content: str = Field(
         ..., title="Box content", description="Content for the box", min_length=1
+    )
+    expires_in: ExpiresInEnum = Field(
+        ..., title="Box expiration time", description="Expiration delay for the box"
     )
 
 
@@ -54,11 +81,18 @@ class BoxCreatedSchema(BaseModel):
     id: UUID4 = Field(..., title="Box ID", description="Unique ID of the box")
 
 
+class BoxDataSchema(BaseModel):
+    content: str = Field(
+        ..., title="Box content", description="Content for the box", min_length=1
+    )
+    expires_at: datetime = Field(
+        ..., title="Box expiration", description="Expiration time for the box"
+    )
+
+
 class BoxSchema(BaseModel):
     id: UUID4 = Field(..., title="Box ID", description="Unique ID of the box")
-    data: BoxCreationSchema = Field(
-        ..., title="Box data", description="Box data as object"
-    )
+    data: BoxDataSchema = Field(..., title="Box data", description="Box data as object")
 
 
 def get_db(req: Request) -> Generator[Redis, None, None]:  # pragma: no cover
@@ -76,7 +110,11 @@ def get_db(req: Request) -> Generator[Redis, None, None]:  # pragma: no cover
 )
 def create_box(data: BoxCreationSchema, db: Redis = Depends(get_db)) -> Dict[str, str]:
     box_id = uuid.uuid4()
-    db.set(f"box:{box_id}", json.dumps(dict(content=data.content)))
+    box_expiration = datetime.utcnow() + data.expires_in.to_timedelta()
+    box_data = dict(content=data.content, expires_at=box_expiration.isoformat())
+    box_key = f"box:{box_id}"
+    db.set(box_key, json.dumps(box_data))
+    db.expireat(box_key, box_expiration)
     return dict(id=str(box_id))
 
 
