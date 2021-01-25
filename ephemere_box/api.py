@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import uuid
 
@@ -95,10 +97,10 @@ class BoxSchema(BaseModel):
     data: BoxDataSchema = Field(..., title="Box data", description="Box data as object")
 
 
-def get_db(req: Request) -> Generator[Redis, None, None]:  # pragma: no cover
+def get_db(req: Request) -> Generator["Redis[bytes]", None, None]:  # pragma: no cover
     settings: Settings = req.app.state.settings
     conn = Redis.from_url(settings.redis_dsn)
-    with conn:  # type: ignore
+    with conn:
         yield conn
 
 
@@ -108,7 +110,9 @@ def get_db(req: Request) -> Generator[Redis, None, None]:  # pragma: no cover
     description="Create a new box content",
     response_model=BoxCreatedSchema,
 )
-def create_box(data: BoxCreationSchema, db: Redis = Depends(get_db)) -> Dict[str, str]:
+def create_box(
+    data: BoxCreationSchema, db: "Redis[bytes]" = Depends(get_db)
+) -> Dict[str, str]:
     box_id = uuid.uuid4()
     box_expiration = datetime.utcnow() + data.expires_in.to_timedelta()
     box_data = dict(content=data.content, expires_at=box_expiration.isoformat())
@@ -124,7 +128,7 @@ def create_box(data: BoxCreationSchema, db: Redis = Depends(get_db)) -> Dict[str
     description="Get box content",
     response_model=BoxSchema,
 )
-def get_box(box_id: uuid.UUID, db: Redis = Depends(get_db)) -> Dict[str, str]:
+def get_box(box_id: uuid.UUID, db: "Redis[bytes]" = Depends(get_db)) -> Dict[str, str]:
     box_data = db.get(f"box:{box_id}")
     if box_data is None:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Box not found")
