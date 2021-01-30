@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import uuid
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from http import HTTPStatus
 from typing import Dict, Generator
@@ -98,8 +98,7 @@ class BoxSchema(BaseModel):
 
 
 def get_db(req: Request) -> Generator["Redis[bytes]", None, None]:  # pragma: no cover
-    settings: Settings = req.app.state.settings
-    conn = Redis.from_url(settings.redis_dsn)
+    conn = req.app.state.redis
     with conn:
         yield conn
 

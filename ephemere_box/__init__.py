@@ -5,7 +5,7 @@ from fastapi import FastAPI
 def create_app(env_file: Optional[str] = ".env") -> FastAPI:
     from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
     from fastapi.middleware.cors import CORSMiddleware
-    from . import api, sentry
+    from . import api, db, sentry
     from .settings import Settings
 
     settings = Settings(_env_file=env_file)  # type: ignore
@@ -31,6 +31,7 @@ def create_app(env_file: Optional[str] = ".env") -> FastAPI:
 
     app.include_router(api.router, prefix="", tags=["api"])
 
+    db.init(app)
     sentry.init(app)
 
     return app
