@@ -24,11 +24,16 @@ Run QA suite:
 inv qa
 ```
 
+Run local Redis server:
+
+```bash
+docker-compose up -d
+```
+
 Run API server:
 
-```
+```bash
 cp .example.env .env
-docker-compose up -d
 honcho start
 ```
 
