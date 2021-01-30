@@ -117,7 +117,7 @@ def create_box(
     box_data = dict(content=data.content, expires_at=box_expiration.isoformat())
     box_key = f"box:{box_id}"
     db.set(box_key, json.dumps(box_data))
-    db.expireat(box_key, box_expiration)
+    db.expireat(box_key, int(box_expiration.replace(tzinfo=timezone.utc).timestamp()))
     return dict(id=str(box_id))
 
 
