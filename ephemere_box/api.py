@@ -114,10 +114,13 @@ def create_box(
 ) -> Dict[str, str]:
     box_id = uuid.uuid4()
     box_expiration = datetime.utcnow() + data.expires_in.to_timedelta()
-    box_data = dict(content=data.content, expires_at=box_expiration.isoformat())
+    box_expiration = box_expiration.replace(tzinfo=timezone.utc)
+    box_data = dict(
+        content=data.content, expires_at=box_expiration.isoformat(timespec="seconds")
+    )
     box_key = f"box:{box_id}"
     db.set(box_key, json.dumps(box_data))
-    db.expireat(box_key, int(box_expiration.replace(tzinfo=timezone.utc).timestamp()))
+    db.expireat(box_key, int(box_expiration.timestamp()))
     return dict(id=str(box_id))
 
 
