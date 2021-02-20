@@ -10,7 +10,7 @@ honcho = "~=1.0.1"
 pydantic = "~=1.7.3"
 redis = "~=3.5.3"
 sentry-sdk = "~=0.20.3"
-uvicorn = {extras = ["standard"], version = "~=0.13.3"}
+uvicorn = {extras = ["standard"], version = "~=0.13.4"}
 
 [dev-packages]
 bandit = "~=1.7.0"
